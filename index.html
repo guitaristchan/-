@@ -35,29 +35,25 @@
         #sendBtn { border: none; background: #007AFF; color: white; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-weight: bold; }
 
         /* 4. ⭐ 말풍선 위치 및 동그란 디자인 수정 */
-        /* 말풍선 컨테이너 위치를 머리 위로 올림 */
         .live2d-widget-dialog-container {
             position: fixed !important;
             right: 20px !important;
-            bottom: 340px !important; /* 캐릭터 키보다 높게 설정하여 머리 위로 배치 */
+            bottom: 340px !important; 
             z-index: 999999 !important;
             opacity: 1 !important;
             pointer-events: none !important;
         }
 
-        /* 말풍선 본체 디자인 (동그란 모양 + 자동 크기) */
         .live2d-widget-dialog {
             background: rgba(255, 255, 255, 0.95) !important;
             border: 3px solid #007AFF !important;
-            border-radius: 40px !important; /* 둥근 모양 */
+            border-radius: 40px !important; 
             padding: 20px 30px !important;
             font-size: 20px !important;
             font-weight: 700 !important;
             color: #111 !important;
             line-height: 1.4 !important;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
-            
-            /* 텍스트 크기에 맞춰 늘어나도록 설정 */
             width: fit-content !important; 
             min-width: 100px !important;
             max-width: 300px !important;
@@ -66,7 +62,6 @@
             display: block !important;
         }
 
-        /* 캐릭터 이미지 클릭 방지 */
         #live2d-widget { pointer-events: none !important; }
     </style>
 </head>
@@ -103,7 +98,7 @@
             "dialog": { "enable": true }
         });
 
-        // 2. 답변 출력 함수 (말풍선 요소 제어)
+        // 2. 답변 출력 함수
         function botSay(text) {
             const dialogBox = document.querySelector('.live2d-widget-dialog');
             if (dialogBox) {
@@ -121,42 +116,28 @@
             if (bgm.paused) {
                 bgm.play();
                 musicBtn.classList.add('playing');
-                botSay("휘찬님의 연주를 들어보세요! 🎻");
+                botSay("휘찬님의 연주를 들어보세요! 🎸");
             } else {
                 bgm.pause();
                 musicBtn.classList.remove('playing');
             }
         };
 
-        // 4. 질문 처리
-        function handleQuestion() {
-            const input = document.getElementById('userInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            let reply = "그 질문에 대해서는 곧 학습할게요!";
-
-            if (msg.includes("대학") || msg.includes("학교") || msg.includes("서울대")) {
-                reply = "서울대학교 음악대학에 재학 중입니다! 🎓";
-            } else if (msg.includes("전공") || msg.includes("악기")) {
-                reply = "현재 현악 전공으로 멋진 연주를 하고 계세요! 🎻";
-            } else if (msg.includes("학생회") || msg.includes("부국장")) {
-                reply = "음대 학생회 사무부국장으로 활동 중입니다! 💼";
-            }
-
-            botSay(reply);
-            input.value = "";
-        }
-
-        document.getElementById('sendBtn').onclick = handleQuestion;
-        document.getElementById('userInput').onkeydown = (e) => { if (e.key === 'Enter') handleQuestion(); };
-
-        // 5. 슬라이더 설정
-        new Swiper('.swiper', { 
-            loop: true, 
-            autoplay: { delay: 4000, disableOnInteraction: false },
-            speed: 1000,
-        });
-    </script>
-</body>
-</html>
+        // 4. 질문 처리용 데이터베이스 (100+ 항목)
+        const hwichanDB = {
+            "성함": "윤휘찬님입니다. 서울대학교 기악과 22학번에 재학 중이세요!",
+            "이름": "윤휘찬님입니다. 훌륭한 기획자이자 연주자이시죠!",
+            "생일": "12월 20일입니다. 겨울에 태어나셨네요!",
+            "학교": "서울대학교 음악대학에 재학 중입니다. 🎓",
+            "대학": "서울대학교 음악대학에 재학 중입니다. 🎓",
+            "전공": "기악과에서 클래식 기타를 전공하고 계세요! 🎸",
+            "악기": "클래식 기타 전공자이시며, 섬세한 연주를 하십니다.",
+            "학번": "22학번입니다. 벌써 졸업이 다가오고 있네요!",
+            "학점": "본전공 졸업까지 현재 단 5학점만 남으셨대요! 거의 다 왔네요.",
+            "복수전공": "정보문화학과 또는 사회복지학과 진입을 고민 중이십니다.",
+            "정보문화학과": "IT와 인문학의 조화, 정보문화학과를 목표로 하고 계세요.",
+            "사회복지학과": "음악의 사회적 역할을 고민하며 사회복지학과에도 관심이 있으십니다.",
+            "학생회": "음대 학생회 사무국 부국장으로 활동하며 리더십을 발휘 중입니다. 💼",
+            "부국장": "사무국의 든든한 살림꾼, 사무국 부국장직을 맡고 계세요.",
+            "사무국": "학생회 행정과 사업 전반을 지원하는 사무국 소속입니다.",
+            "제휴": "파파존스, 무신사, 롯데월드, 공차 등 기업 제휴 경험이 많
