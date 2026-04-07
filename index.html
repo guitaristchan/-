@@ -12,33 +12,31 @@
         .swiper { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
 
-        /* 입력창 영역 (z-index를 가장 높게 설정) */
+        /* 입력창 영역 (z-index를 극한으로 높임) */
         #chat-container {
-            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
             z-index: 999999999 !important; 
-            display: flex; width: 90%; max-width: 400px;
+            display: flex; width: 85%; max-width: 400px;
             background: white; padding: 10px 15px; border-radius: 40px;
-            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
             pointer-events: auto !important;
         }
         
         #userInput { flex: 1; border: none; outline: none; font-size: 16px; padding: 5px 10px; background: transparent; }
-        #sendBtn { border: none; background: #222; color: white; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+        #sendBtn { border: none; background: #000; color: white; padding: 10px 18px; border-radius: 30px; cursor: pointer; font-weight: bold; }
 
-        /* 버튜버 말풍선 강제 표시 스타일 */
-        .live2d-widget-dialog-container {
-            pointer-events: none !important; /* 말풍선이 입력을 방해하지 않도록 함 */
-            opacity: 1 !important;
-        }
+        /* 버튜버 설정 */
+        #live2d-widget { pointer-events: none !important; }
+        .live2d-widget-dialog-container { opacity: 1 !important; pointer-events: none !important; }
     </style>
 </head>
 <body>
 
     <div class="swiper">
         <div class="swiper-wrapper">
-            <div class="swiper-slide"><img src="https://picsum.photos/id/10/1080/1920"></div>
-            <div class="swiper-slide"><img src="https://picsum.photos/id/20/1080/1920"></div>
-            <div class="swiper-slide"><img src="https://picsum.photos/id/30/1080/1920"></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/id/101/1080/1920"></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/id/102/1080/1920"></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/id/103/1080/1920"></div>
         </div>
     </div>
 
@@ -59,50 +57,46 @@
             "dialog": { "enable": true }
         });
 
-        // 2. 메시지 표시 함수 직접 구현 (기존 showTextMessage 에러 해결법)
-        function displayMessage(text) {
-            const dialogBox = document.querySelector('.live2d-widget-dialog');
-            if (dialogBox) {
-                dialogBox.innerText = text;
-                dialogBox.style.opacity = 1;
-                // 5초 뒤에 사라지게 하려면 아래 코드 활성화
-                // setTimeout(() => { dialogBox.style.opacity = 0; }, 5000);
+        // 2. 말풍선 텍스트 강제 변경 함수 (핵심!)
+        function botSay(text) {
+            const dialogElement = document.querySelector('.live2d-widget-dialog');
+            if (dialogElement) {
+                dialogElement.innerText = text;
+                dialogElement.style.opacity = 1;
             } else {
-                // 아직 버튜버 로딩 전이라면 일반 알림으로 표시
-                alert(text);
+                // 아직 로딩 전이면 0.5초 뒤에 다시 시도
+                setTimeout(() => botSay(text), 500);
             }
         }
 
-        // 3. 답변 로직
-        function handleQuery() {
+        // 3. 질문 처리 로직
+        function handleQuestion() {
             const input = document.getElementById('userInput');
-            const query = input.value.trim();
-            if(!query) return;
+            const msg = input.value.trim();
+            if (!msg) return;
 
-            let reply = `'${query}'에 대해 궁금하시군요! 휘찬님은 정말 멋진 분이에요.`;
+            let reply = `'${msg}'에 대해 궁금하시군요! 휘찬님은 아주 훌륭한 분입니다.`;
 
-            if(query.includes("대학") || query.includes("학교") || query.includes("서울대")) {
+            if (msg.includes("대학") || msg.includes("학교") || msg.includes("서울대")) {
                 reply = "윤휘찬님은 서울대학교 음악대학에 재학 중입니다! 🎓";
-            } else if(query.includes("전공") || query.includes("악기")) {
-                reply = "현재 현악(Strings)을 전공하고 있어요! 🎻";
-            } else if(query.includes("학생회") || query.includes("직책")) {
-                reply = "음대 학생회 사무부국장으로 활동하고 계십니다! 💼";
+            } else if (msg.includes("전공") || msg.includes("악기") || msg.includes("현악")) {
+                reply = "현재 기악과에서 현악을 전공하고 있어요! 🎻";
+            } else if (msg.includes("학생회") || msg.includes("부국장")) {
+                reply = "음대 학생회 사무부국장으로서 멋진 리더십을 보여주고 있죠! 💼";
             }
 
-            displayMessage(reply);
-            input.value = ""; 
+            botSay(reply);
+            input.value = "";
         }
 
-        // 4. 이벤트 연결
-        window.onload = function() {
-            document.getElementById('sendBtn').onclick = handleQuery;
-            document.getElementById('userInput').onkeydown = function(e) {
-                if (e.key === 'Enter') handleQuery();
-            };
+        // 4. 이벤트 연결 (엔터 & 클릭)
+        document.getElementById('sendBtn').onclick = handleQuestion;
+        document.getElementById('userInput').onkeydown = function(e) {
+            if (e.key === 'Enter') handleQuestion();
         };
 
         // 5. 슬라이더 설정
-        const swiper = new Swiper('.swiper', { loop: true });
+        new Swiper('.swiper', { loop: true, autoplay: { delay: 4000 } });
     </script>
 </body>
 </html>
