@@ -6,31 +6,56 @@
     <title>휘찬의 AI 포트폴리오</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: 'Pretendard', sans-serif; }
         
-        /* 배경 슬라이더 */
+        /* 1. 배경 슬라이더 */
         .swiper { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
 
-        /* 입력창 영역 (z-index를 극한으로 높임) */
+        /* 2. 뮤직 플레이어 버튼 (우측 상단) */
+        #music-control {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border: 2px solid white; transition: 0.3s;
+        }
+        #music-control.playing { border-color: #007AFF; box-shadow: 0 0 15px #007AFF; }
+        #music-icon { font-size: 24px; color: white; }
+
+        /* 3. 입력창 디자인 */
         #chat-container {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
             z-index: 999999999 !important; 
-            display: flex; width: 85%; max-width: 400px;
-            background: white; padding: 10px 15px; border-radius: 40px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.7);
-            pointer-events: auto !important;
+            display: flex; width: 85%; max-width: 450px;
+            background: rgba(255, 255, 255, 0.95); padding: 10px 20px; border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
         }
         
-        #userInput { flex: 1; border: none; outline: none; font-size: 16px; padding: 5px 10px; background: transparent; }
-        #sendBtn { border: none; background: #000; color: white; padding: 10px 18px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+        #userInput { flex: 1; border: none; outline: none; font-size: 18px; padding: 5px 10px; background: transparent; color: #111; }
+        #sendBtn { border: none; background: #007AFF; color: white; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-weight: bold; }
 
-        /* 버튜버 설정 */
+        /* 4. 말풍선 디자인 */
+        .live2d-widget-dialog {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%) !important; 
+            border: 3px solid #007AFF !important; border-radius: 25px !important;
+            padding: 20px 25px !important; font-size: 22px !important; 
+            font-weight: 700 !important; color: #111 !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+            max-width: 300px !important; text-align: center !important;
+        }
+
         #live2d-widget { pointer-events: none !important; }
         .live2d-widget-dialog-container { opacity: 1 !important; pointer-events: none !important; }
     </style>
 </head>
 <body>
+
+    <audio id="bgm" src="music.mp3" loop></audio>
+
+    <div id="music-control">
+        <span id="music-icon">🎵</span>
+    </div>
 
     <div class="swiper">
         <div class="swiper-wrapper">
@@ -41,7 +66,7 @@
     </div>
 
     <div id="chat-container">
-        <input type="text" id="userInput" placeholder="휘찬님 전공이 뭐야?" autocomplete="off" />
+        <input type="text" id="userInput" placeholder="휘찬님에 대해 물어보세요!" autocomplete="off" />
         <button id="sendBtn">질문</button>
     </div>
 
@@ -52,51 +77,69 @@
         // 1. 버튜버 초기화
         L2Dwidget.init({
             "model": { "jsonPath": "https://cdn.jsdelivr.net/gh/evrstr/live2d-widget-models/live2d_evrstr/koharu/model.json" },
-            "display": { "position": "right", "width": 150, "height": 300, "hOffset": 10, "vOffset": 0 },
+            "display": { "position": "right", "width": 180, "height": 360, "hOffset": 10, "vOffset": 0 },
             "mobile": { "show": true },
             "dialog": { "enable": true }
         });
 
-        // 2. 말풍선 텍스트 강제 변경 함수 (핵심!)
+        // 2. 음악 제어 로직
+        const bgm = document.getElementById('bgm');
+        const musicBtn = document.getElementById('music-control');
+        const musicIcon = document.getElementById('music-icon');
+
+        musicBtn.onclick = () => {
+            if (bgm.paused) {
+                bgm.play();
+                musicBtn.classList.add('playing');
+                musicIcon.innerText = '⏸️';
+                botSay("휘찬님의 연주를 감상해보세요! 🎻");
+            } else {
+                bgm.pause();
+                musicBtn.classList.remove('playing');
+                musicIcon.innerText = '🎵';
+            }
+        };
+
+        // 3. 답변 출력 함수
         function botSay(text) {
             const dialogElement = document.querySelector('.live2d-widget-dialog');
             if (dialogElement) {
-                dialogElement.innerText = text;
+                dialogElement.innerHTML = text.replace(/\n/g, '<br>');
                 dialogElement.style.opacity = 1;
             } else {
-                // 아직 로딩 전이면 0.5초 뒤에 다시 시도
                 setTimeout(() => botSay(text), 500);
             }
         }
 
-        // 3. 질문 처리 로직
+        // 4. 질문 처리 (음악 관련 키워드 추가)
         function handleQuestion() {
             const input = document.getElementById('userInput');
             const msg = input.value.trim();
             if (!msg) return;
 
-            let reply = `'${msg}'에 대해 궁금하시군요! 휘찬님은 아주 훌륭한 분입니다.`;
+            let reply = `'${msg}'에 대해 궁금하시군요!`;
 
             if (msg.includes("대학") || msg.includes("학교") || msg.includes("서울대")) {
-                reply = "윤휘찬님은 서울대학교 음악대학에 재학 중입니다! 🎓";
-            } else if (msg.includes("전공") || msg.includes("악기") || msg.includes("현악")) {
-                reply = "현재 기악과에서 현악을 전공하고 있어요! 🎻";
-            } else if (msg.includes("학생회") || msg.includes("부국장")) {
-                reply = "음대 학생회 사무부국장으로서 멋진 리더십을 보여주고 있죠! 💼";
+                reply = "윤휘찬님은 **서울대학교 음악대학**에 재학 중인 멋진 인재입니다! 🎓";
+            } else if (msg.includes("음악") || msg.includes("노래") || msg.includes("연주")) {
+                reply = "우측 상단의 음표 버튼을 누르면 휘찬님의 실제 연주곡을 들을 수 있어요! 🎻";
+            } else if (msg.includes("전공") || msg.includes("악기")) {
+                reply = "현재 **현악** 전공으로 활동하고 계십니다! 🎻";
             }
 
             botSay(reply);
             input.value = "";
         }
 
-        // 4. 이벤트 연결 (엔터 & 클릭)
         document.getElementById('sendBtn').onclick = handleQuestion;
-        document.getElementById('userInput').onkeydown = function(e) {
-            if (e.key === 'Enter') handleQuestion();
-        };
+        document.getElementById('userInput').onkeydown = (e) => { if (e.key === 'Enter') handleQuestion(); };
 
-        // 5. 슬라이더 설정
-        new Swiper('.swiper', { loop: true, autoplay: { delay: 4000 } });
+        // 5. 슬라이더 설정 (자동 넘김)
+        new Swiper('.swiper', { 
+            loop: true, 
+            autoplay: { delay: 4000, disableOnInteraction: false },
+            speed: 1000,
+        });
     </script>
 </body>
 </html>
