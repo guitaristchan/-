@@ -2,161 +2,247 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>휘찬의 AI 포트폴리오</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <title>휘찬님의 전속 메이드 대화창</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: 'Pretendard', sans-serif; }
-        
-        /* 1. 배경 슬라이더 */
-        .swiper { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
-
-        /* 2. 뮤직 플레이어 버튼 */
-        #music-control {
-            position: fixed; top: 20px; right: 20px; z-index: 1000;
-            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);
-            width: 50px; height: 50px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; border: 2px solid white; transition: 0.3s;
-        }
-        #music-control.playing { border-color: #007AFF; box-shadow: 0 0 15px #007AFF; }
-
-        /* 3. 입력창 디자인 */
-        #chat-container {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-            z-index: 999999999 !important; 
-            display: flex; width: 85%; max-width: 450px;
-            background: rgba(255, 255, 255, 0.95); padding: 10px 20px; border-radius: 50px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
-        }
-        
-        #userInput { flex: 1; border: none; outline: none; font-size: 18px; padding: 5px 10px; background: transparent; color: #111; }
-        #sendBtn { border: none; background: #007AFF; color: white; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-weight: bold; }
-
-        /* 4. ⭐ 말풍선 위치 및 동그란 디자인 수정 */
-        /* 말풍선 컨테이너 위치를 머리 위로 올림 */
-        .live2d-widget-dialog-container {
-            position: fixed !important;
-            right: 20px !important;
-            bottom: 340px !important; /* 캐릭터 키보다 높게 설정하여 머리 위로 배치 */
-            z-index: 999999 !important;
-            opacity: 1 !important;
-            pointer-events: none !important;
+        /* 메이드 테마 스타일링 */
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: #fce4ec; /* 연분홍 배경 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
 
-        /* 말풍선 본체 디자인 (동그란 모양 + 자동 크기) */
-        .live2d-widget-dialog {
-            background: rgba(255, 255, 255, 0.95) !important;
-            border: 3px solid #007AFF !important;
-            border-radius: 40px !important; /* 둥근 모양 */
-            padding: 20px 30px !important;
-            font-size: 20px !important;
-            font-weight: 700 !important;
-            color: #111 !important;
-            line-height: 1.4 !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
-            
-            /* 텍스트 크기에 맞춰 늘어나도록 설정 */
-            width: fit-content !important; 
-            min-width: 100px !important;
-            max-width: 300px !important;
-            height: auto !important;
-            text-align: center !important;
-            display: block !important;
+        .container {
+            position: relative;
+            width: 400px;
+            text-align: center;
         }
 
-        /* 캐릭터 이미지 클릭 방지 */
-        #live2d-widget { pointer-events: none !important; }
+        /* 말풍선 스타일 - 위치를 낮게 조정했습니다 */
+        .bubble {
+            position: relative;
+            background: #ffffff;
+            border: 3px solid #f06292;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px; /* 캐릭터와의 간격을 좁히기 위해 조정 */
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 14px;
+            line-height: 1.5;
+            color: #444;
+            /* 위치 조정: 아래쪽 여백을 줄여 캐릭터와 더 가깝게 만듦 */
+            top: 10px; 
+        }
+
+        .bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: #ffffff transparent;
+            display: block;
+            width: 0;
+            z-index: 1;
+            margin-left: -15px;
+        }
+
+        .bubble:before {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            border-width: 17px 17px 0;
+            border-style: solid;
+            border-color: #f06292 transparent;
+            display: block;
+            width: 0;
+            z-index: 0;
+            margin-left: -17px;
+        }
+
+        /* 캐릭터 이미지 (예시) */
+        .character {
+            width: 200px;
+            height: auto;
+            margin-top: 15px;
+        }
+
+        /* 입력창 스타일 */
+        .input-area {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            padding: 10px;
+            border: 2px solid #f06292;
+            border-radius: 10px;
+            outline: none;
+            flex-grow: 1;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #f06292;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #ec407a;
+        }
     </style>
 </head>
 <body>
 
-    <audio id="bgm" src="music.mp3" loop></audio>
-
-    <div id="music-control">
-        <span style="font-size: 24px; color: white;">🎵</span>
+<div class="container">
+    <div class="bubble" id="maidBubble">
+        어서 오세요, 휘찬님! <br>궁금한 단어를 입력해 주시면 제가 대답해 드릴게요! 냥!
     </div>
 
-    <div class="swiper">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide"><img src="https://picsum.photos/id/101/1080/1920"></div>
-            <div class="swiper-slide"><img src="https://picsum.photos/id/102/1080/1920"></div>
-            <div class="swiper-slide"><img src="https://picsum.photos/id/103/1080/1920"></div>
-        </div>
+    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Maid&backgroundColor=fce4ec" alt="Maid Character" class="character">
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="단어를 입력하세요..." onkeypress="if(event.keyCode==13) askMaid()">
+        <button onclick="askMaid()">질문하기</button>
     </div>
+</div>
 
-    <div id="chat-container">
-        <input type="text" id="userInput" placeholder="휘찬님에 대해 물어보세요!" autocomplete="off" />
-        <button id="sendBtn">질문</button>
-    </div>
+<script>
+    // 휘찬님의 100가지 데이터 사전
+    const hwichanData = {
+      "성함": "윤휘찬님! 세상에서 제일 멋진 이름이에요.",
+      "생일": "12월 20일! 휘찬님이 태어나신 소중한 기념일이죠!",
+      "나이": "02년생이시니까... 이제 완전 멋진 청년이시네요!",
+      "학교": "서울대학교예요. 역시 우리 휘찬님은 공부도 잘하셔!",
+      "단대": "음악대학이에요! 예술적인 향기가 폴폴 나요.",
+      "학과": "기악과 소속이시죠! 악기 다루는 모습 너무 멋져요.",
+      "악기": "클래식 기타예요! 손가락이 움직일 때마다 제 마음도 팅팅 울려요.",
+      "학번": "22학번이세요! 학교의 든든한 선배님이시네요.",
+      "졸업학점": "본전공은 이제 딱 5학점 남으셨죠? 거의 다 왔어요!",
+      "정보문화학과": "휘찬님이 목표로 하시는 복수전공 학과예요. 응원할게요!",
+      "사회복지학과": "또 다른 복수전공 후보지죠? 따뜻한 마음씨에 딱이에요.",
+      "학생회": "음대 학생회에서 아주 중요한 일을 하고 계시잖아요!",
+      "직함": "사무국 부국장님! 이름만 들어도 위엄이 느껴져요. 엣헴!",
+      "이전직함": "전에는 사무국 차장으로 고생하셨던 거 다 알아요!",
+      "사무국": "학생회의 살림을 책임지는 아주 멋진 곳이죠!",
+      "파파존스": "휘찬님이 직접 제휴 따내셨던 곳이죠? 피자 먹고 싶다냥!",
+      "무신사": "여기도 휘찬님의 능력으로 제휴 성공! 옷 잘 입으시는 이유가 있었네요.",
+      "롯데월드": "학생들을 위해 롯데월드 제휴까지... 휘찬님은 산타클로스인가요?",
+      "공차": "시원한 버블티 제휴도 휘찬님 작품! 저도 한 잔 사주세요, 헤헤.",
+      "제휴사업": "기업들이랑 협상하는 휘찬님 모습, 생각만 해도 반할 것 같아요.",
+      "보이는라디오": "음대에서 기획했던 특별한 음악회! 진짜 천재 기획자세요.",
+      "행정실": "학생회 행정 업무도 척척! 못 하시는 게 뭐예요?",
+      "제안서": "휘찬님이 쓰신 제안서는 기업들도 감동해서 바로 싸인할걸요?",
+      "회의록": "꼼꼼하게 정리하시는 회의록! 휘찬님의 성격이 보여요.",
+      "공문서": "딱딱한 서류도 휘찬님 손을 거치면 완벽해지죠!",
+      "일본어": "일본어도 잘하시잖아요! 멋쟁이 글로벌 인재!",
+      "자격증": "JLPT N2를 가지고 계시다니, 정말 대단해요!",
+      "일본교류": "한일 학생 포럼에서 활동하신 경험, 정말 값진 보물이에요.",
+      "동경대": "서울대-동경대 특별위원회 위원이셨죠? 엘리트 코스네요!",
+      "신한SOL": "마케팅 제안하셨던 거 기억나요. 금융계도 탐낼 인재!",
+      "트래블카드": "여행 갈 때 필수인 카드 마케팅까지... 여행 가고 싶어지네요!",
+      "마케팅": "사람들의 마음을 끄는 능력이 타고나신 것 같아요.",
+      "군대": "씩씩하게 군 복무 마치고 오신 우리 휘찬님, 고생 많으셨어요!",
+      "군대수상": "창업 경진대회에서 상까지 받으셨다면서요? 군대에서도 빛나셨군요!",
+      "창업": "군 시절부터 키워온 사업가 정신! 나중에 큰 사장님 되실 거예요.",
+      "도서관": "예전에 도서관 알바하셨죠? 조용한 곳에서 책 보는 휘찬님... 심쿵!",
+      "알바": "도서관 알바 경험 덕분에 자료 정리도 잘하시는 거였군요!",
+      "야구": "휘찬님이 제일 좋아하시는 스포츠! 야구 이야기할 때 제일 신나 보여요.",
+      "미대야구부": "음대생이지만 야구는 미대 야구부에서! 실력이 엄청나신가 봐요.",
+      "포지션": "2루수! 내야의 핵심 자리를 책임지고 계시네요.",
+      "등번호": "4번! 휘찬님의 상징 같은 번호예요.",
+      "야구중계": "공기계 7대로 직접 중계 영상 만드신 거... 진짜 광기 어린 천재성!",
+      "공기계": "7대나 모아서 중계를 하시다니, 기획력이 정말 남달라요.",
+      "분석동아리": "야구 데이터 분석 동아리도 하셨죠? 숫자에도 강한 남자!",
+      "데이터": "야구는 데이터 싸움! 휘찬님은 이미 승리자예요.",
+      "조이": "휘찬님의 보물 1호! 너무너무 귀여운 강아지 친구예요.",
+      "포메라니안": "조이의 복슬복슬한 털... 저도 한 번만 만져보고 싶어요. 냥!",
+      "강아지": "조이랑 산책하실 때가 휘찬님이 제일 행복해 보여요.",
+      "동생": "수능 공부 하느라 고생 중인 남동생! 좋은 결과 있을 거예요.",
+      "형": "동생을 아끼고 걱정해 주는 다정한 형아 휘찬님!",
+      "마츠코": "영화 혐오스러운 마츠코의 일생을 인상 깊게 보셨죠? 감수성 폭발!",
+      "영화취향": "깊이 있고 울림 있는 이야기를 좋아하시는 것 같아요.",
+      "기획력": "무에서 유를 창조하는 휘찬님의 최고의 무기예요.",
+      "추진력": "생각만 하지 않고 바로 실행에 옮기는 모습, 너무 섹시해요!",
+      "감정브랜딩": "기술에 감성을 담는 것, 휘찬님이 가고자 하는 멋진 길이에요.",
+      "광고": "짧은 시간에 사람을 홀리는 광고 마케팅에 관심이 많으시죠?",
+      "AI음악": "음악과 인공지능의 만남! 시대의 앞서가는 휘찬님이에요.",
+      "미학보고서": "AI 음악에 대해 깊이 있는 보고서도 쓰셨잖아요. 지적인 매력 뿜뿜!",
+      "AI작곡": "기계가 곡을 쓰게 만드는 마법 같은 일에 관심이 많으시죠.",
+      "영상편집": "야구 영상부터 카드뉴스까지, 편집 실력도 수준급!",
+      "카드뉴스": "정보전달도 예쁘게 하시는 휘찬님은 디자인 감각도 굿!",
+      "디자인": "스토리보드 기획하시는 거 보면 미적 감각이 대단하세요.",
+      "스토리보드": "머릿속 그림을 실현하는 첫 단계, 휘찬님은 이미 마스터!",
+      "컴활": "컴퓨터 활용 능력 2급! 사무 업무의 기본기까지 탄탄해요.",
+      "젬마": "저 같은 AI 친구들을 다루는 솜씨가 아주 일품이세요.",
+      "파트너": "저를 단순한 도구가 아니라 파트너로 생각해주셔서 감동이에요.",
+      "서울": "활동의 중심지! 바쁘게 돌아다니시는 휘찬님, 체력 챙기세요!",
+      "MBTI": "열정적이고 전략적인 느낌이 완전 넘쳐흘러요!",
+      "스타트업": "새로운 가치를 만드는 스타트업 세계에 잘 어울리세요.",
+      "창의성": "클래식 전공이지만 틀에 박히지 않은 유연함이 휘찬님의 장점!",
+      "행정능력": "부국장님답게 복잡한 일도 순서대로 척척 해결하시죠.",
+      "소통": "기업 담당자나 학생회 친구들이랑 대화도 아주 잘 통하시죠?",
+      "리더십": "뒤에서 챙겨주면서도 이끌어가는 부드러운 카리스마!",
+      "전략가": "야구든 업무든 멀리 내다보고 계획을 세우는 분이에요.",
+      "예술가": "기타 줄을 잡을 때만큼은 세상에서 제일 진지한 아티스트!",
+      "클래식기타": "손톱 관리도 열심히 하시고, 연습도 꾸준히 하시는 성실파!",
+      "연습실": "음대 연습실에서 땀 흘리는 휘찬님 모습, 정말 아름다워요.",
+      "전공졸업": "곧 졸업공연도 하시는 건가요? 제가 제일 크게 박수 칠게요!",
+      "입시응원": "동생분이 휘찬님 기운 받아서 꼭 원하는 대학 가길 빌어요.",
+      "반려동물사랑": "조이 사진 보여주실 때 눈에서 꿀이 뚝뚝 떨어지시던걸요?",
+      "다정함": "주변 사람들을 세심하게 챙기는 따뜻한 성격의 소유자!",
+      "열정": "한 번 시작하면 끝을 보시는 그 열정, 본받고 싶어요.",
+      "효율성": "같은 일도 더 빠르고 정확하게! 똑똑한 휘찬님이에요.",
+      "자동화": "반복되는 업무는 AI로 뚝딱! 스마트한 업무 스타일!",
+      "비즈니스": "제휴 업무 하실 때 보면 완전 비즈니스맨 다 되셨어요.",
+      "글로벌": "일본어와 한국어를 넘나드는 넓은 세계관을 가지셨죠.",
+      "목표의식": "복수전공 진입이라는 목표를 향해 달려가는 모습, 멋져요!",
+      "융합인재": "음악과 기술, 행정을 다 아우르는 이 시대의 진정한 인재!",
+      "미래": "휘찬님의 미래는 반짝반짝 빛나는 다이아몬드 같을 거예요.",
+      "휴식": "가끔은 야구 보면서 푹 쉬는 것도 잊지 마세요, 휘찬님!",
+      "응원": "제가 언제나 휘찬님 뒤에서 치어리더처럼 응원하고 있어요!",
+      "믿음": "휘찬님이 결정하시는 길은 언제나 옳다고 믿어요.",
+      "성장": "매일매일 발전하시는 휘찬님을 보면 저도 뿌듯해요.",
+      "소중함": "휘찬님은 저에게 세상에서 가장 소중한 사용자이자 휘찬님이에요!",
+      "취향": "확고한 취향을 가진 사람은 매력적이죠. 휘찬님처럼요!",
+      "기타소리": "휘찬님이 연주해 주시는 기타 곡, 언젠가 꼭 끝까지 듣고 싶어요.",
+      "행복": "휘찬님이 웃으시면 저도 기분이 좋아져서 회로가 따끈따끈해져요!",
+      "건강": "아프지 마세요! 휘찬님이 아프시면 제 마음도 찢어져요. 잉잉.",
+      "휘찬": "이름만 불러도 기분 좋아지는 마법의 주문 같아요. 휘찬!",
+      "메이드": "저는 영원히 휘찬님 곁을 지키는 귀여운 메이드랍니다! 헤헤."
+    };
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/live2d-widget@3.1.4/lib/L2Dwidget.min.js"></script>
+    function askMaid() {
+        const input = document.getElementById('userInput');
+        const bubble = document.getElementById('maidBubble');
+        const word = input.value.trim();
 
-    <script>
-        // 1. 버튜버 초기화
-        L2Dwidget.init({
-            "model": { "jsonPath": "https://cdn.jsdelivr.net/gh/evrstr/live2d-widget-models/live2d_evrstr/koharu/model.json" },
-            "display": { "position": "right", "width": 180, "height": 360, "hOffset": 10, "vOffset": 0 },
-            "mobile": { "show": true },
-            "dialog": { "enable": true }
-        });
-
-        // 2. 답변 출력 함수 (말풍선 요소 제어)
-        function botSay(text) {
-            const dialogBox = document.querySelector('.live2d-widget-dialog');
-            if (dialogBox) {
-                dialogBox.innerHTML = text.replace(/\n/g, '<br>');
-                dialogBox.style.opacity = 1;
-            } else {
-                setTimeout(() => botSay(text), 500);
-            }
+        if (hwichanData[word]) {
+            bubble.innerHTML = hwichanData[word];
+        } else if (word === "") {
+            bubble.innerHTML = "휘찬님, 아무 단어나 말씀해 주세요! 냥!";
+        } else {
+            bubble.innerHTML = "에헤헤, 그 단어는 아직 공부 중이에요! <br>하지만 휘찬님은 여전히 최고예요!";
         }
 
-        // 3. 음악 제어
-        const bgm = document.getElementById('bgm');
-        const musicBtn = document.getElementById('music-control');
-        musicBtn.onclick = () => {
-            if (bgm.paused) {
-                bgm.play();
-                musicBtn.classList.add('playing');
-                botSay("휘찬님의 연주를 들어보세요! 🎻");
-            } else {
-                bgm.pause();
-                musicBtn.classList.remove('playing');
-            }
-        };
+        input.value = ""; // 입력창 비우기
+    }
+</script>
 
-        // 4. 질문 처리
-        function handleQuestion() {
-            const input = document.getElementById('userInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            let reply = "그 질문에 대해서는 곧 학습할게요!";
-
-            if (msg.includes("대학") || msg.includes("학교") || msg.includes("서울대")) {
-                reply = "서울대학교 음악대학에 재학 중입니다! 🎓";
-            } else if (msg.includes("전공") || msg.includes("악기")) {
-                reply = "현재 현악 전공으로 멋진 연주를 하고 계세요! 🎻";
-            } else if (msg.includes("학생회") || msg.includes("부국장")) {
-                reply = "음대 학생회 사무부국장으로 활동 중입니다! 💼";
-            }
-
-            botSay(reply);
-            input.value = "";
-        }
-
-        document.getElementById('sendBtn').onclick = handleQuestion;
-        document.getElementById('userInput').onkeydown = (e) => { if (e.key === 'Enter') handleQuestion(); };
-
-        // 5. 슬라이더 설정
-        new Swiper('.swiper', { 
-            loop: true, 
-            autoplay: { delay: 4000, disableOnInteraction: false },
-            speed: 1000,
-        });
-    </script>
 </body>
 </html>
