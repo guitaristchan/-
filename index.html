@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>딴 짓 하면 죽는다 </title>
+    <title>딴 짓 하면 죽는다</title>
 </head>
-<body style="margin: 0; padding: 0; overflow: hidden; text-align: center;">
+<body style="margin: 0; padding: 0; overflow: hidden;">
 
-    <!-- 150x150 크기에 맞춘 경고 문구 -->
-    <h1 style="font-size: 14px; margin: 5px 0; color: red; font-family: sans-serif;">딴 짓 하면 죽는다</h1>
-    
-    <!-- 캔버스 너비에 딱 맞춘 gif 이미지 -->
-    <img src="cook.gif" alt="경고" width="140" style="display: block; margin: 0 auto; border-radius: 4px;">
+    <!-- 우측 하단 고정을 위한 래퍼 컨테이너 -->
+    <div style="position: fixed; bottom: 20px; right: 20px; text-align: center; z-index: 9999;">
+        
+        <!-- 빨간색이었던 글자를 검은색(black)으로 수정하고 마진 조정 -->
+        <h1 style="font-size: 14px; margin: 0 0 5px 0; color: black; font-family: sans-serif; font-weight: bold;">
+            딴 짓 하면 죽는다
+        </h1>
+        
+        <!-- 캔버스 너비에 맞춘 gif 이미지 -->
+        <img src="cook.gif" alt="경고" width="140" style="display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        
+    </div>
 
 </body>
 </html>
